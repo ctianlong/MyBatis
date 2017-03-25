@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.tongjilab.mybatis.mapper.PersonMapper">
     <select id="selectPerson"
-            resultType="Person" parameterType="Person">
+            resultType="Person">
         SELECT *
         FROM Person
         WHERE id = #{id}

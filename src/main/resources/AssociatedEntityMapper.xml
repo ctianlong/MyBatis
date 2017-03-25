@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tongjilab.mybatis.mapper">
+
+	<!-- 插入作者 -->
+	<insert id="insertAuthor" useGeneratedKeys="true" parameterType="Author" keyProperty="id">
+        INSERT INTO author (username, nickname, birthday, register_time) VALUES (#{username}, #{nickname}, #{birthday}, #{registerTime})
+    </insert>
+    
+	<!--查询作者-->
+	<select id="selectAuthor" resultMap="authorResultMap">
+	    SELECT
+	        id,
+	        username,
+	        nickname,
+	        birthday,
+	        register_time
+	    FROM author
+	    WHERE id = #{id}
+	</select>
+	
+	<!--通过名字查询作者-->
+	<select id="selectAuthorByName" resultMap="authorResultMap">
+	    SELECT
+	        id,
+	        username,
+	        nickname,
+	        birthday,
+	        register_time
+	    FROM author
+	    WHERE username = #{username}
+	</select>
+	
+	<!-- 更新作者 -->
+	<update id="updateAuthor">
+        UPDATE author
+        SET birthday = #{birthday}
+        WHERE id = #{id}
+    </update>
+    
+    <!-- 删除作者 -->
+	<delete id="deleteAuthor">
+        DELETE FROM author
+        WHERE id = #{id}
+    </delete>
+    
+	<!--作者结果映射-->
+	<resultMap id="authorResultMap" type="Author" autoMapping="true">
+	    <id property="id" column="id"/>
+	    <result property="registerTime" column="register_time"/>
+	</resultMap>
+	
+	
+	<!-- 插入文章 -->
+	<insert id="insertArticle" useGeneratedKeys="true" parameterType="Article" keyProperty="id">
+		INSERT INTO article (title, content, author, create_time, modify_time) VALUES (#{title}, #{content}, #{author.id}, #{createTime}, #{modifyTime})
+	</insert>
+	
+	<!-- 删除文章 -->
+	<delete id="deleteArticle">
+		DELETE FROM article WHERE id = #{id}
+	</delete>
+	
+	<!--查询文章，关联的嵌套查询：文章的作者，产生N+1问题-->
+	<!-- 集合的嵌套查询：文章的评论，产生N+1问题-->
+	<select id="selectArticle" resultMap="articleResultMap">
+	    SELECT
+	        id,
+	        title,
+	        content,
+	        author,
+	        create_time,
+	        modify_time
+	    FROM article
+	    WHERE id = #{id}
+	</select>
+	<!--文章结果映射，关联的嵌套查询：文章的作者，产生N+1问题-->
+	<!-- 集合的嵌套查询：文章的评论，产生N+1问题-->
+	<resultMap id="articleResultMap" type="Article">
+	    <id property="id" column="id"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="modifyTime" column="modify_time"/>
+	    <association property="author" column="author" select="selectAuthor" javaType="Author"/>
+	    <collection property="comments" column="id" ofType="Comment" select="selectCommentsByArticle"/>
+	</resultMap>
+	
+	<!-- 查询文章，关联的嵌套结果：文章的作者 -->
+	<!-- 集合的嵌套结果：文章的评论 -->
+	<select id="selectArticle2" resultMap="articleResultMap2">
+	    SELECT
+	        article.id,
+	        article.title,
+	        article.content,
+	        article.author,
+	        article.create_time,
+	        article.modify_time,
+	        author.id AS a_id,
+	        author.username AS a_username,
+	        author.nickname AS a_nickname,
+	        author.birthday AS a_birthday,
+	        author.register_time AS a_register_time,
+	        comment.id AS c_id,
+	        comment.content AS c_content,
+        	comment.create_time AS c_create_time
+	    FROM article
+	         LEFT OUTER JOIN author ON article.author = author.id
+	         LEFT OUTER JOIN comment ON article.id = comment.article
+	    WHERE article.id = #{id}
+	</select>
+	<!--文章结果映射，关联的嵌套结果：文章的作者-->
+	<!-- 集合的嵌套结果：文章的评论 -->
+	<!-- 注意：需要在 articleResultMap2、authorResultMap、commentResultMap 都设置 autoMapping="true" 才能完整映射
+		只在 articleResultMap2 中有 autoMapping="true" 不能使 authorResultMap 和 commentResultMap 完成自动映射
+		有三种自动映射等级：
+			NONE - 禁用自动映射。仅设置手动映射属性。
+			PARTIAL - 将自动映射结果 除了那些有内部定义内嵌结果映射的(joins).（默认）
+			FULL - 自动映射所有。	
+	 -->
+	<resultMap id="articleResultMap2" type="Article" autoMapping="true">
+	    <id property="id" column="id"/>
+	    <result property="createTime" column="create_time"/>
+	    <result property="modifyTime" column="modify_time"/>
+	    <association property="author" javaType="Author" resultMap="authorResultMap" columnPrefix="a_"/>
+	    <collection property="comments" ofType="Comment" resultMap="commentResultMap" columnPrefix="c_"/>
+	</resultMap>
+	
+	
+	<!-- 插入评论 -->
+	<insert id="insertComment" useGeneratedKeys="true" parameterType="Comment" keyProperty="id">
+		INSERT INTO comment (author, article, content, create_time) VALUES (#{author.id}, #{article.id}, #{content}, #{createTime})
+	</insert>
+	
+	<!-- 删除评论 -->
+	<delete id="deleteComment">
+		DELETE FROM comment WHERE id = #{id}
+	</delete>
+	
+	<!--通过文章ID查找评论-->
+	<select id="selectCommentsByArticle" resultMap="commentResultMap" parameterType="int">
+	    SELECT
+	        id,
+	        content,
+	        create_time
+	    FROM comment
+	    WHERE article = #{id}
+	</select>
+	<!-- 评论结果映射 -->
+	<resultMap id="commentResultMap" type="Comment" autoMapping="true">
+	    <id property="id" column="id"/>
+	    <result property="createTime" column="create_time"/>
+	</resultMap>
+	
+</mapper>

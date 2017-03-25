@@ -35,6 +35,7 @@
     <!--配置映射文件-->
     <mappers>
         <mapper resource="BaseEntityMapper.xml"/>
+        <mapper resource="AssociatedEntityMapper.xml"/>
     </mappers>
  
 </configuration>
