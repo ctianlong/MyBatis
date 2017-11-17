@@ -115,7 +115,7 @@
 		只在 articleResultMap2 中有 autoMapping="true" 不能使 authorResultMap 和 commentResultMap 完成自动映射
 		有三种自动映射等级：
 			NONE - 禁用自动映射。仅设置手动映射属性。
-			PARTIAL - 将自动映射结果 除了那些有内部定义内嵌结果映射的(joins).（默认）
+			PARTIAL - 将自动映射结果,除了那些有内部定义内嵌结果映射的(joins).（默认）
 			FULL - 自动映射所有。	
 	 -->
 	<resultMap id="articleResultMap2" type="Article" autoMapping="true">

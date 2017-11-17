@@ -19,7 +19,6 @@ public class Article {
 	
 	public Article(String title, String content, Author author, LocalDateTime createTime,
 			LocalDateTime modifyTime) {
-		super();
 		this.title = title;
 		this.content = content;
 		this.author = author;

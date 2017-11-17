@@ -12,7 +12,6 @@ public class Person {
 	}
 	
 	public Person(Integer id, String username, LocalDate birthday) {
-		super();
 		this.id = id;
 		this.username = username;
 		this.birthday = birthday;

@@ -15,7 +15,6 @@ public class Author {
 	}
 	
 	public Author(String username, String nickname, LocalDate birthday, LocalDateTime registerTime) {
-		super();
 		this.username = username;
 		this.nickname = nickname;
 		this.birthday = birthday;

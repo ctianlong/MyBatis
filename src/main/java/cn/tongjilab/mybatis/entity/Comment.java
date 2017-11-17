@@ -14,7 +14,6 @@ public class Comment {
 	}
 
 	public Comment(String content, Author author, Article article, LocalDateTime createTime) {
-		super();
 		this.content = content;
 		this.author = author;
 		this.article = article;
